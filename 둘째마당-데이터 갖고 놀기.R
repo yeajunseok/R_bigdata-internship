@@ -221,6 +221,66 @@ exam %>% arrange(class, math)
 # 혼자서 해보기
 mpg %>% filter(manufacturer == "audi") %>% arrange(hwy) %>% head(5)
 
+# 파생변수 추가하기
+exam %>% mutate(total = math + english + science) %>% head(3)
+exam %>% mutate(test = ifelse(science >= 60, "PASS", "fail")) %>% head
+exam %>% mutate(total = math + english + science) %>% arrange(total) %>% head 
+
+# 혼자서 해보기
+# 1.
+mpg <- mpg %>% mutate(tot = hwy + cty)
+head(mpg, 3)
+# 2.
+mpg <- mpg %>% mutate(avg = tot/2)
+head(mpg, 3)
+# 3.
+mpg %>% arrange(desc(avg)) %>% head(3)
+# 4.
+mpg %>% mutate(tot = hwy + cty, avg = tot/2) %>% arrange(desc(avg)) %>% head(3)
+
+# 집단별로 요약하기
+exam %>% summarise(mean_math = mean(math))
+exam %>% group_by(class) %>% summarise(mean_math = mean(math))
+mpg %>% group_by(manufacturer, drv) %>% summarise(mean_cty = mean(cty)) %>% head(10)
+
+# 혼자서 해보기
+# 1.
+mpg %>% group_by(class) %>% summarise(mean(cty))
+# 2.
+mpg %>% group_by(class) %>% summarise(mean_cty = mean(cty)) %>% arrange(desc(mean_cty))
+# 3.
+mpg %>% group_by(manufacturer) %>% summarise(mean_hwy = mean(hwy)) %>% arrange(desc(mean_hwy)) %>% head(3)
+# 4.
+mpg %>% filter(class == "compact") %>% group_by(manufacturer) %>% summarise(count = n()) %>% arrange(desc(count))
+
+# 혼자서 해보기
+fuel <- data.frame(fl = c("c","d","e","p","r"),
+                   price_fl = c(2.35, 2.38, 2.11, 2.76, 2.22),
+                   stringsAsFactors = F)
+fuel
+# 1.
+mpg_test <- mpg
+mpg_new <- left_join(mpg, fuel, by="fl") %>% head(10)
+
+# 2.
+mpg_new %>% select(model, fl, price_fl) %>% head(5)
+
+
+# 분석 도전!
+midwest <- as.data.frame(ggplot2::midwest)
+dim(midwest)
+names(midwest)
+# 1.
+midwest <- midwest %>% mutate(ratio_child = (poptotal - popadults)/poptotal*100)
+head(midwest, 5)
+# 2.
+midwest %>% arrange(desc(ratio_child)) %>% select(county, ratio_child) %>% head(5)
+# 3.
+midwest %>% mutate(grade = ifelse(ratio_child >= 40, "large",
+                            ifelse(ratio_child >= 30, "middle", "small"))) %>% select(ratio_child, grade) %>% head(20)
+# 4.
+midwest %>% mutate(ratio_asian = popasian/poptotal * 100) %>% arrange(ratio_asian) %>% select(state, county, ratio_asian) %>% head(10)
+
 
 ### 07. 데이터 정제하기 - 빠진 데이터, 이상한 데이터 제거하기
 
